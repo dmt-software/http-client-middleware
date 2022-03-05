@@ -1,9 +1,9 @@
 # Http Client Middleware
 
 Unfortunately [psr-15](https://www.php-fig.org/psr/psr-15/), the recommendation how to handle incoming server request, 
-does not cover how to deal with an outgoing client request, or a client response.
+does not cover how to deal with an outgoing request or a client response.
  
-This package solves this problem in a similar way.
+This package solves that problem.
 
 ## Installation
 `composer require dmt-software/http-client-middleware`
