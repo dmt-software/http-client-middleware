@@ -33,7 +33,8 @@ final class RequestHandler implements RequestHandlerInterface
     public function handle(RequestInterface $request): ResponseInterface
     {
         while (count($this->middleware)) {
-            return array_shift($this->middleware)->process($request, $this);
+            $next = clone($this);
+            return array_shift($next->middleware)->process($request, $next);
         }
 
         return $this->client->sendRequest($request);
