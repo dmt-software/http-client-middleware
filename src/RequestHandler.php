@@ -32,7 +32,7 @@ final class RequestHandler implements RequestHandlerInterface
      */
     public function handle(RequestInterface $request): ResponseInterface
     {
-        while (count($this->middleware)) {
+        if (count($this->middleware)) {
             $next = clone($this);
             return array_shift($next->middleware)->process($request, $next);
         }
