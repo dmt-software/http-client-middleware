@@ -92,4 +92,20 @@ class RetryMiddlewareTest extends TestCase
         $this->assertSame($response, $handler->handle($request));
         $this->assertGreaterThanOrEqual($date, new DateTime());
     }
+
+    public function testStopRetriesOnExceedingMaxDelay()
+    {
+        $request = new Request('GET', '/');
+        $client = new Client([
+            'handler' => HandlerStack::create(
+                new MockHandler([
+                    $response = new Response(429, ['Retry-After' => '60']),
+                ])
+            )
+        ]);
+
+        $handler = new RequestHandler($client, new RetryMiddleware(2, 30));
+
+        $this->assertSame($response, $handler->handle($request));
+    }
 }

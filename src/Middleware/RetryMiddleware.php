@@ -28,11 +28,23 @@ class RetryMiddleware implements MiddlewareInterface
     private int $retries;
 
     /**
-     * @param int $retries The amount of retries until the request is aborted.
+     * The max time to delay a retry.
+     *
+     * When a response was received and the max delay time is exceeded, the response is returned.
+     * This limits the request handler execution time.
+     *
+     * @var int
      */
-    public function __construct(int $retries = 2)
+    private int $maxDelay;
+
+    /**
+     * @param int $retries The amount of retries until the request is aborted.
+     * @param int $maxDelay The max time between the current request and the retry in seconds.
+     */
+    public function __construct(int $retries = 2, int $maxDelay = 30)
     {
         $this->retries = $retries;
+        $this->maxDelay = $maxDelay;
     }
 
     /**
@@ -57,15 +69,17 @@ class RetryMiddleware implements MiddlewareInterface
                     }
 
                     $after = $response->getHeaderLine('Retry-After');
-                    $resumeTime = time() + intval($after);
                     if (!preg_match('~^\d+$~', $after)) {
                         $resumeTime = new DateTime($after, new DateTimeZone('UTC'));
                         $resumeTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
-                        $resumeTime = $resumeTime->format('U');
+                        $after = (int)$resumeTime->format('U') - microtime(true);
                     }
-                    time_sleep_until($resumeTime);
 
-                    continue;
+                    if ($after <= $this->maxDelay) {
+                        time_nanosleep(intval($after), ($after * 1000000) % 1000000 * 1000);
+
+                        continue;
+                    }
                 }
 
                 return $response;
