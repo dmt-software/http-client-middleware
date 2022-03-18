@@ -10,6 +10,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -73,7 +74,7 @@ class CallbackMiddlewareTest extends TestCase
         ]);
 
         $count = 0;
-        $callback = function ($requestOrResponse) use (&$count) {
+        $callback = function (MessageInterface $requestOrResponse) use (&$count) {
             $count++;
             return $requestOrResponse;
         };
