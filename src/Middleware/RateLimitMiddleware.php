@@ -2,6 +2,7 @@
 
 namespace DMT\Http\Client\Middleware;
 
+use DateInterval;
 use DateTime;
 use DateTimeInterface;
 use DMT\Http\Client\Middleware\RateLimit\Counter;
@@ -56,8 +57,11 @@ class RateLimitMiddleware implements MiddlewareInterface
 
         try {
             if ($counter->count > $this->limit && new DateTime() < $counter->expireTime) {
+                if ($counter->expireTime->diff(new DateTime(), true)->f > 0) {
+                    $expireTime = $counter->expireTime->add(new DateInterval('PT1S'));
+                }
                 return $this->factory->createResponse(429, 'Too Many Requests')
-                    ->withHeader('Retry-After', $counter->expireTime->format(DateTimeInterface::RFC7231));
+                    ->withHeader('Retry-After', $expireTime->format(DateTimeInterface::RFC7231));
             }
             $counter->count++;
             $this->cache->set($this->cacheKey, $counter, $counter->expireTime->diff(new DateTime(), true));
