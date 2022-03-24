@@ -57,8 +57,9 @@ class RateLimitMiddleware implements MiddlewareInterface
 
         try {
             if ($counter->count > $this->limit && new DateTime() < $counter->expireTime) {
-                if ($counter->expireTime->diff(new DateTime(), true)->f > 0) {
-                    $expireTime = $counter->expireTime->add(new DateInterval('PT1S'));
+                $expireTime = clone($counter->expireTime);
+                if ($expireTime->format('u') > 0) {
+                    $expireTime = $expireTime->add(new DateInterval('PT1S'));
                 }
                 return $this->factory->createResponse(429, 'Too Many Requests')
                     ->withHeader('Retry-After', $expireTime->format(DateTimeInterface::RFC7231));
