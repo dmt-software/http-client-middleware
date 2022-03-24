@@ -72,7 +72,7 @@ class RetryMiddleware implements MiddlewareInterface
                     if (!preg_match('~^\d+$~', $after)) {
                         $resumeTime = new DateTime($after, new DateTimeZone('UTC'));
                         $resumeTime->setTimezone(new DateTimeZone(date_default_timezone_get()));
-                        $after = (int)$resumeTime->format('U') - microtime(true);
+                        $after = max(0, (int)$resumeTime->format('U') - microtime(true));
                     }
 
                     if ($after <= $this->maxDelay) {
