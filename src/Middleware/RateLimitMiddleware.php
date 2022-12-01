@@ -82,7 +82,7 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     private function getCounter(): Counter
     {
-        $default = new Counter(new DateTime(date('Y-m-d H:i:s.u', microtime(true) + $this->duration)));
+        $default = new Counter(DateTime::createFromFormat('U', $this->duration + time()));
 
         /** @var Counter $counter */
         $counter = $this->cache->get($this->cacheKey, $default);
