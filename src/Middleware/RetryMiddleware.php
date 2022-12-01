@@ -88,7 +88,7 @@ class RetryMiddleware implements MiddlewareInterface
                     throw $exception;
                 }
 
-                time_nanosleep(floor($i / 10), ($i * 100000000) % 1000000000);
+                time_nanosleep(intval($i / 10), ($i * 100000000) % 1000000000);
             }
         }
     }
