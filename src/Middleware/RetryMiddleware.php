@@ -76,7 +76,7 @@ class RetryMiddleware implements MiddlewareInterface
                     }
 
                     if ($after <= $this->maxDelay) {
-                        time_nanosleep(intval($after), ($after * 1000000) % 1000000 * 1000);
+                        time_nanosleep(intval($after), intval($after * 1000000) % 1000000 * 1000);
 
                         continue;
                     }
