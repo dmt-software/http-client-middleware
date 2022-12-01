@@ -82,7 +82,7 @@ class RetryMiddleware implements MiddlewareInterface
                     }
                 }
 
-                return $response;
+                break;
             } catch (NetworkExceptionInterface $exception) {
                 if ($i++ === $this->retries) {
                     throw $exception;
@@ -91,5 +91,7 @@ class RetryMiddleware implements MiddlewareInterface
                 time_nanosleep(intval($i / 10), ($i * 100000000) % 1000000000);
             }
         }
+
+        return $response;
     }
 }
