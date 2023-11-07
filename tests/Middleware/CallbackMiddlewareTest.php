@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class CallbackMiddlewareTest extends TestCase
 {
-    public function testRequestCallable()
+    public function testRequestCallable(): void
     {
         $request = new Request('GET', '/');
         $client = new Client([
@@ -39,7 +39,7 @@ class CallbackMiddlewareTest extends TestCase
         $this->assertTrue($isCalled);
     }
 
-    public function testResponseCallable()
+    public function testResponseCallable(): void
     {
         $request = new Request('GET', '/');
         $client = new Client([
@@ -62,7 +62,7 @@ class CallbackMiddlewareTest extends TestCase
         $this->assertTrue($isCalled);
     }
 
-    public function testRequestAndResponseCallable()
+    public function testRequestAndResponseCallable(): void
     {
         $request = new Request('GET', '/');
         $client = new Client([

@@ -15,12 +15,8 @@ class FollowRedirectMiddlewareTest extends TestCase
 {
     /**
      * @dataProvider provideFollowRedirect
-     *
-     * @param string $method
-     * @param int $statusCode
-     * @param string $expectedMethod
      */
-    public function testProcess(string $method, int $statusCode, string $expectedMethod)
+    public function testProcess(string $method, int $statusCode, string $expectedMethod): void
     {
         $client = $this->getMockBuilder(Client::class)
             ->onlyMethods(['sendRequest'])
@@ -61,12 +57,8 @@ class FollowRedirectMiddlewareTest extends TestCase
 
     /**
      * @dataProvider provideNoFollow
-     *
-     * @param string $method
-     * @param int $statusCode
-     * @param array $headers
      */
-    public function testProcessNoFollow(string $method, int $statusCode, array $headers = [])
+    public function testProcessNoFollow(string $method, int $statusCode, array $headers = []): void
     {
         $client = $this->getMockBuilder(Client::class)
             ->onlyMethods(['sendRequest'])

@@ -8,15 +8,9 @@ use DateTimeZone;
 
 class Counter
 {
-    public int $count = 1;
-    public DateTimeInterface $expireTime;
-
-    /**
-     * @param DateTimeInterface $expireTime
-     */
-    public function __construct(DateTimeInterface $expireTime)
+    public function __construct(public DateTimeInterface $expireTime, public int $count = 1)
     {
-        $this->expireTime = $expireTime->setTimezone(new DateTimeZone('UTC'));
+        $this->expireTime->setTimezone(new DateTimeZone('UTC'));
     }
 
     public function __serialize(): array

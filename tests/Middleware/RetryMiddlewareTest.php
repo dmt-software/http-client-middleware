@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 class RetryMiddlewareTest extends TestCase
 {
-    public function testRetrySuccessAfterConnectionFailure()
+    public function testRetrySuccessAfterConnectionFailure(): void
     {
         $request = new Request('GET', '/');
         $client = new Client([
@@ -34,7 +34,7 @@ class RetryMiddlewareTest extends TestCase
         $this->assertSame($response, $handler->handle($request));
     }
 
-    public function testNoMoreRetriesOnConnectionFailure()
+    public function testNoMoreRetriesOnConnectionFailure(): void
     {
         $request = new Request('GET', '/');
         $client = new Client([
@@ -53,7 +53,7 @@ class RetryMiddlewareTest extends TestCase
         $handler->handle($request);
     }
 
-    public function testRetrySuccessAfterServerUnavailableResponse()
+    public function testRetrySuccessAfterServerUnavailableResponse(): void
     {
         $start = time();
         $request = new Request('GET', '/');
@@ -72,7 +72,7 @@ class RetryMiddlewareTest extends TestCase
         $this->assertGreaterThanOrEqual(1, abs($start - time()));
     }
 
-    public function testRetrySuccessWithRetryAfterHeader()
+    public function testRetrySuccessWithRetryAfterHeader(): void
     {
         $date = new DateTime(date('Y-m-d H:i:s.000', strtotime('+2 seconds')));
         $date->setTimezone(new \DateTimeZone('UTC'));
@@ -93,7 +93,7 @@ class RetryMiddlewareTest extends TestCase
         $this->assertGreaterThanOrEqual($date, new DateTime());
     }
 
-    public function testStopRetriesOnExceedingMaxDelay()
+    public function testStopRetriesOnExceedingMaxDelay(): void
     {
         $request = new Request('GET', '/');
         $client = new Client([

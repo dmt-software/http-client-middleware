@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 class BasicAuthenticationMiddlewareTest extends TestCase
 {
-    public function testBasicAuth()
+    public function testBasicAuth(): void
     {
         $originalRequest = new Request('GET', '/');
 
