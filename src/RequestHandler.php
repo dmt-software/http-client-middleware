@@ -9,26 +9,16 @@ use Psr\Http\Message\ResponseInterface;
 
 final class RequestHandler implements RequestHandlerInterface
 {
-    private ClientInterface $client;
-    /** @var MiddlewareInterface[]  */
+    /** @var array<MiddlewareInterface> */
     private array $middleware = [];
 
-    /**
-     * @param ClientInterface $client
-     * @param MiddlewareInterface|null ...$middleware
-     */
-    public function __construct(ClientInterface $client, ?MiddlewareInterface ...$middleware)
+    public function __construct(private readonly ClientInterface $client, ?MiddlewareInterface ...$middleware)
     {
-        $this->client = $client;
         $this->middleware = $middleware;
     }
 
     /**
-     * Handle the client request.
-     *
-     * @param RequestInterface $request
-     * @return ResponseInterface
-     * @throws ClientExceptionInterface
+     * @inheritDoc
      */
     public function handle(RequestInterface $request): ResponseInterface
     {

@@ -16,40 +16,20 @@ use Psr\SimpleCache\CacheInterface;
 
 class RateLimitMiddleware implements MiddlewareInterface
 {
-    private int $limit;
-    private int $duration;
-    private ResponseFactoryInterface $factory;
-    private CacheInterface $cache;
-    private string $cacheKey;
-
-    /**
-     * @param int $limit
-     * @param int $duration
-     * @param ResponseFactoryInterface $factory
-     * @param CacheInterface $cache
-     * @param string|null $cacheKey
-     */
     public function __construct(
-        int $limit,
-        int $duration,
-        ResponseFactoryInterface $factory,
-        CacheInterface $cache,
-        string $cacheKey = null
+        private readonly int $limit,
+        private readonly int $duration,
+        private readonly ResponseFactoryInterface $factory,
+        private readonly CacheInterface $cache,
+        private ?string $cacheKey = null
     ) {
-        $this->limit = $limit;
-        $this->duration = $duration;
-        $this->factory = $factory;
-        $this->cache = $cache;
-        $this->cacheKey = $cacheKey ?? sprintf('DMT_RateLimit_%d_%d', $duration, $limit);
+        $this->cacheKey ??= sprintf('DMT_RateLimit_%d_%d', $duration, $limit);
     }
 
     /**
      * Rate limit the request.
      *
-     * @param RequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     * @throws ClientExceptionInterface
+     * {@inheritDoc}
      */
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

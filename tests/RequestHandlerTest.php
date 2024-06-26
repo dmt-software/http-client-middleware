@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class RequestHandlerTest extends TestCase
 {
-    public function testHandle()
+    public function testHandle(): void
     {
         $response = (new RequestHandler($this->getClient()))->handle(new Request('GET', '/'));
 
@@ -25,7 +25,7 @@ class RequestHandlerTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testHandleWithMiddleware()
+    public function testHandleWithMiddleware(): void
     {
         $middleware = new class implements MiddlewareInterface {
             public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

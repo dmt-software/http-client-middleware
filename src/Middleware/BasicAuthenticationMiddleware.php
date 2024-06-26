@@ -9,20 +9,13 @@ use Psr\Http\Message\ResponseInterface;
 
 class BasicAuthenticationMiddleware implements MiddlewareInterface
 {
-    private string $user;
-    private string $pass;
-
-    /**
-     * @param string $user
-     * @param string $pass
-     */
-    public function __construct(string $user, string $pass)
+    public function __construct(private readonly string $user, private readonly string $pass)
     {
-        $this->user = $user;
-        $this->pass = $pass;
     }
 
     /**
+     * Append basic authentication header.
+     *
      * @inheritDoc
      */
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface

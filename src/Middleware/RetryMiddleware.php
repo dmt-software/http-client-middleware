@@ -6,7 +6,6 @@ use DateTime;
 use DateTimeZone;
 use DMT\Http\Client\MiddlewareInterface;
 use DMT\Http\Client\RequestHandlerInterface;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\NetworkExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -20,40 +19,18 @@ class RetryMiddleware implements MiddlewareInterface
 {
     public const RETRY_RESPONSE_STATUS = [429, 503];
 
-    /**
-     * The max amount of tries to connect to the server.
-     *
-     * @var int
-     */
-    private int $retries;
-
-    /**
-     * The max time to delay a retry.
-     *
-     * When a response was received and the max delay time is exceeded, the response is returned.
-     * This limits the request handler execution time.
-     *
-     * @var int
-     */
-    private int $maxDelay;
-
-    /**
-     * @param int $retries The amount of retries until the request is aborted.
-     * @param int $maxDelay The max time between the current request and the retry in seconds.
-     */
-    public function __construct(int $retries = 2, int $maxDelay = 30)
-    {
-        $this->retries = $retries;
-        $this->maxDelay = $maxDelay;
+    public function __construct(
+        /** The amount of retries until the request is aborted. */
+        private readonly int $retries = 2,
+        /** The max time between the current request and the retry in seconds.*/
+        private readonly int $maxDelay = 30
+    ) {
     }
 
     /**
      * Retry the request.
      *
-     * @param RequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     * @throws ClientExceptionInterface
+     * {@inheritDoc}
      */
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

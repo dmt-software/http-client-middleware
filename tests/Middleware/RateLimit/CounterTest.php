@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class CounterTest extends TestCase
 {
-    public function testCounter()
+    public function testCounter(): void
     {
         $ttl = 30;
         $date = new DateTime(date('Y-m-d H:i:s.000', ceil(microtime(true)) + $ttl));

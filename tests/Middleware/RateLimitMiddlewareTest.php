@@ -19,7 +19,7 @@ use Psr\SimpleCache\CacheInterface;
 
 class RateLimitMiddlewareTest extends TestCase
 {
-    public function testExceedsLimit()
+    public function testExceedsLimit(): void
     {
         $request = new Request('GET', '/');
         $client = new Client([
@@ -52,7 +52,7 @@ class RateLimitMiddlewareTest extends TestCase
         );
     }
 
-    public function testNotExceedsLimit()
+    public function testNotExceedsLimit(): void
     {
         $client = new Client([
             'handler' => HandlerStack::create(
@@ -78,7 +78,7 @@ class RateLimitMiddlewareTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testResetCounter()
+    public function testResetCounter(): void
     {
         $request = new Request('GET', '/');
         $client = new Client([

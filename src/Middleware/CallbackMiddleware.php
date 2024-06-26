@@ -2,9 +2,9 @@
 
 namespace DMT\Http\Client\Middleware;
 
+use Closure;
 use DMT\Http\Client\MiddlewareInterface;
 use DMT\Http\Client\RequestHandlerInterface;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -19,9 +19,7 @@ class CallbackMiddleware implements MiddlewareInterface
     public const TYPE_REQUEST = 1;
     public const TYPE_RESPONSE = 2;
 
-    /** @var callable */
-    private $callback;
-    private int $messageType;
+    private Closure $callback;
 
     /**
      * @param callable $callback A callback function to execute.
@@ -31,30 +29,26 @@ class CallbackMiddleware implements MiddlewareInterface
      *  as the one that was received.
      * @param int $messageType The message type to apply the callback on
      */
-    public function __construct(callable $callback, int $messageType = self::TYPE_REQUEST)
+    public function __construct(callable $callback, private readonly int $messageType = self::TYPE_REQUEST)
     {
-        $this->callback = $callback;
-        $this->messageType = $messageType;
+        $this->callback = $callback(...);
     }
 
     /**
      * Execute the callback.
      *
-     * @param RequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     * @throws ClientExceptionInterface
+     * {@inheritDoc}
      */
     public function process(RequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $callback = $this->callback;
         if ($this->messageType & self::TYPE_REQUEST) {
-            $request = call_user_func($this->callback, $request);
+            $request = $callback($request);
         }
 
         $response = $handler->handle($request);
-
         if ($this->messageType & self::TYPE_RESPONSE) {
-            $response = call_user_func($this->callback, $response);
+            $response = $callback($response);
         }
 
         return $response;
