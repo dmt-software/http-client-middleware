@@ -13,15 +13,11 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 class ZlibInflateMiddleware implements MiddlewareInterface
 {
-    private StreamFactoryInterface $factory;
-
-    public function __construct(StreamFactoryInterface $factory)
+    public function __construct(private readonly StreamFactoryInterface $factory)
     {
         if (!extension_loaded('zlib')) {
             trigger_error('module zlib is not installed', E_USER_ERROR);
         }
-
-        $this->factory = $factory;
     }
 
     /**
@@ -35,7 +31,7 @@ class ZlibInflateMiddleware implements MiddlewareInterface
             $response->getBody()->rewind();
         }
 
-        if (strpos($response->getHeaderLine('Content-Type'), 'application/x-gzip-compressed') !== false) {
+        if (str_contains($response->getHeaderLine('Content-Type'), 'application/x-gzip-compressed')) {
             $resource = $response->getBody()->detach();
 
             stream_filter_append($resource, 'zlib.inflate', STREAM_FILTER_READ, ['window' => 31, 'memory' => 9]);
