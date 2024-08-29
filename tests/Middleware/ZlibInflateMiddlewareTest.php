@@ -7,9 +7,9 @@ use DMT\Http\Client\RequestHandler;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Http\Factory\Guzzle\StreamFactory;
 use PHPUnit\Framework\TestCase;
 
 class ZlibInflateMiddlewareTest extends TestCase
@@ -27,13 +27,13 @@ class ZlibInflateMiddlewareTest extends TestCase
             'handler' => HandlerStack::create(
                 new MockHandler([
                     (new Response(200))
-                        ->withBody((new StreamFactory())->createStreamFromResource($handle))
+                        ->withBody((new HttpFactory())->createStreamFromResource($handle))
                         ->withHeader('Content-Type', 'application/x-gzip-compressed'),
                 ])
             )
         ]);
 
-        $handler = new RequestHandler($client, new ZlibInflateMiddleware(new StreamFactory()));
+        $handler = new RequestHandler($client, new ZlibInflateMiddleware(new HttpFactory()));
 
         $this->assertSame($expected, $handler->handle($request)->getBody()->getContents());
     }

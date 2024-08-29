@@ -10,9 +10,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Http\Factory\Guzzle\ResponseFactory;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
@@ -38,7 +38,7 @@ class RateLimitMiddlewareTest extends TestCase
 
         $handler = new RequestHandler(
             $client,
-            new RateLimitMiddleware(3, 10, new ResponseFactory(), $cache)
+            new RateLimitMiddleware(3, 10, new HttpFactory(), $cache)
         );
 
         while ($response->getStatusCode() === 202) {
@@ -67,7 +67,7 @@ class RateLimitMiddlewareTest extends TestCase
 
         $handler = new RequestHandler(
             $client,
-            new RateLimitMiddleware(2, 1, new ResponseFactory(), $this->getCache())
+            new RateLimitMiddleware(2, 1, new HttpFactory(), $this->getCache())
         );
 
         while ($response->getStatusCode() === 202) {
@@ -94,7 +94,7 @@ class RateLimitMiddlewareTest extends TestCase
         $cache = $this->getCache();
         $handler = new RequestHandler(
             $client,
-            new RateLimitMiddleware(10, 4, new ResponseFactory(), $cache, 'cacheKey')
+            new RateLimitMiddleware(10, 4, new HttpFactory(), $cache, 'cacheKey')
         );
 
         try {

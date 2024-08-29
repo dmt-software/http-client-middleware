@@ -20,21 +20,17 @@ class FollowRedirectMiddlewareTest extends TestCase
     {
         $client = $this->getMockBuilder(Client::class)
             ->onlyMethods(['sendRequest'])
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $client
             ->expects($this->exactly(2))
             ->method('sendRequest')
-            ->will(
-                $this->onConsecutiveCalls(
-                    new Response($statusCode, ['Location' => 'https://new-location.org/path']),
-                    $this->returnCallback(
-                        function (RequestInterface $request) {
-                            return new Response(200, ['RequestMethod' => $request->getMethod()]);
-                        }
-                    )
-                )
-            );
+            ->willReturnCallback(function (RequestInterface $request) use ($method, $statusCode, &$response) {
+                if (!$response) {
+                    return $response = new Response($statusCode, ['Location' => 'https://new-location.org/path']);
+                }
+                return new Response(200, ['RequestMethod' => $request->getMethod()]);
+            });
 
         $requestHandler = new RequestHandler($client, new FollowRedirectMiddleware(new HttpFactory()));
         $response = $requestHandler->handle(new Request($method, 'https://some-location.org/path'));
@@ -43,7 +39,7 @@ class FollowRedirectMiddlewareTest extends TestCase
         $this->assertSame($expectedMethod, $response->getHeaderLine('requestMethod'));
     }
 
-    public function provideFollowRedirect(): iterable
+    public static function provideFollowRedirect(): iterable
     {
         return [
             ['POST', 301, 'GET'],
@@ -62,7 +58,7 @@ class FollowRedirectMiddlewareTest extends TestCase
     {
         $client = $this->getMockBuilder(Client::class)
             ->onlyMethods(['sendRequest'])
-            ->getMockForAbstractClass();
+            ->getMock();
 
         $client
             ->expects($this->exactly(1))
@@ -74,7 +70,7 @@ class FollowRedirectMiddlewareTest extends TestCase
         $this->assertSame($response, $requestHandler->handle(new Request($method, 'https://some-location.org/path')));
     }
 
-    public function provideNoFollow(): iterable
+    public static function provideNoFollow(): iterable
     {
         return [
             ['PUT', 300, ['Location' => 'https://new-location.org/path']],
