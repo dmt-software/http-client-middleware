@@ -20,6 +20,7 @@ class CallbackMiddleware implements MiddlewareInterface
     public const TYPE_RESPONSE = 2;
 
     private Closure $callback;
+    private int $messageType;
 
     /**
      * @param callable $callback A callback function to execute.
@@ -29,9 +30,10 @@ class CallbackMiddleware implements MiddlewareInterface
      *  as the one that was received.
      * @param int $messageType The message type to apply the callback on
      */
-    public function __construct(callable $callback, private readonly int $messageType = self::TYPE_REQUEST)
+    public function __construct(callable $callback, int $messageType = self::TYPE_REQUEST)
     {
-        $this->callback = $callback(...);
+        $this->callback = Closure::fromCallable($callback);
+        $this->messageType = $messageType;
     }
 
     /**

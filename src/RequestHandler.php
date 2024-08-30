@@ -9,11 +9,13 @@ use Psr\Http\Message\ResponseInterface;
 
 final class RequestHandler implements RequestHandlerInterface
 {
+    protected ClientInterface $client;
     /** @var array<MiddlewareInterface> */
     private array $middleware = [];
 
-    public function __construct(private readonly ClientInterface $client, ?MiddlewareInterface ...$middleware)
+    public function __construct(ClientInterface $client, ?MiddlewareInterface ...$middleware)
     {
+        $this->client = $client;
         $this->middleware = $middleware;
     }
 

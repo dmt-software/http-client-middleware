@@ -9,8 +9,13 @@ use Psr\Http\Message\ResponseInterface;
 
 class BasicAuthenticationMiddleware implements MiddlewareInterface
 {
-    public function __construct(private readonly string $user, private readonly string $pass)
+    private string $user;
+    private string $pass;
+
+    public function __construct(string $user, string $pass)
     {
+        $this->user = $user;
+        $this->pass = $pass;
     }
 
     /**

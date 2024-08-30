@@ -8,8 +8,14 @@ use DateTimeZone;
 
 class Counter
 {
-    public function __construct(public DateTimeInterface $expireTime, public int $count = 1)
+    public DateTimeInterface $expireTime;
+    public int $count = 1;
+
+    public function __construct(DateTimeInterface $expireTime, int $count = 1)
     {
+        $this->count = $count;
+
+        $this->expireTime = $expireTime;
         $this->expireTime->setTimezone(new DateTimeZone('UTC'));
     }
 

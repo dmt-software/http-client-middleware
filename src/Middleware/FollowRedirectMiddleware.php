@@ -11,10 +11,15 @@ use Psr\Http\Message\UriFactoryInterface;
 
 final class FollowRedirectMiddleware implements MiddlewareInterface
 {
+    private UriFactoryInterface $factory;
+    private array $statusCodes;
+
     public function __construct(
-        public readonly UriFactoryInterface $factory,
-        private readonly array $statusCodes = [301, 302, 303, 307, 308]
+        UriFactoryInterface $factory,
+        array $statusCodes = [301, 302, 303, 307, 308]
     ) {
+        $this->factory = $factory;
+        $this->statusCodes = $statusCodes;
     }
 
     /**

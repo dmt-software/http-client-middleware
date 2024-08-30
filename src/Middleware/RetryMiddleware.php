@@ -19,12 +19,21 @@ class RetryMiddleware implements MiddlewareInterface
 {
     public const RETRY_RESPONSE_STATUS = [429, 503];
 
+    private int $retries;
+    private int $maxDelay;
+
+    /**
+     * RetryMiddleware constructor.
+     *
+     * @param int $retries The amount of retries until the request is aborted.
+     * @param int $maxDelay The max time between the current request and the retry in seconds.
+     */
     public function __construct(
-        /** The amount of retries until the request is aborted. */
-        private readonly int $retries = 2,
-        /** The max time between the current request and the retry in seconds.*/
-        private readonly int $maxDelay = 30
+        int $retries = 2,
+        int $maxDelay = 30
     ) {
+        $this->retries = $retries;
+        $this->maxDelay = $maxDelay;
     }
 
     /**
