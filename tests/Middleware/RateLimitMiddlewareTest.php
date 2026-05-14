@@ -6,6 +6,7 @@ use ArrayObject;
 use DateTime;
 use DMT\Http\Client\Middleware\RateLimitMiddleware;
 use DMT\Http\Client\RequestHandler;
+use DMT\Test\Http\Client\Stubs\CacheStub;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
@@ -33,8 +34,25 @@ class RateLimitMiddlewareTest extends TestCase
             )
         ]);
 
-        $cache = $this->getCache();
-        $cache->expects($this->exactly(4))->method('get');
+        $storage = new ArrayObject(['ttl' => []], ArrayObject::ARRAY_AS_PROPS);
+
+        $cache = $this->createMock(CacheInterface::class);
+
+        $cache->expects($this->exactly(4))
+            ->method('get')
+            ->willReturnCallback(function ($key, $default = null) use (&$storage) {
+                if (!isset($storage->ttl[$key]) || $storage->ttl[$key] < new DateTime()) {
+                    return $default;
+                }
+                return $storage->$key ?? $default;
+            });
+
+        $cache->expects($this->exactly(3))
+            ->method('set')
+            ->willReturnCallback(function ($key, $value, $ttl) use (&$storage) {
+                $storage->ttl[$key] = (new DateTime())->add($ttl);
+                $storage[$key] = $value;
+            });
 
         $handler = new RequestHandler(
             $client,
@@ -67,7 +85,7 @@ class RateLimitMiddlewareTest extends TestCase
 
         $handler = new RequestHandler(
             $client,
-            new RateLimitMiddleware(2, 1, new HttpFactory(), $this->getCache())
+            new RateLimitMiddleware(2, 1, new HttpFactory(), new CacheStub())
         );
 
         while ($response->getStatusCode() === 202) {
@@ -91,7 +109,7 @@ class RateLimitMiddlewareTest extends TestCase
             )
         ]);
 
-        $cache = $this->getCache();
+        $cache = new CacheStub();
         $handler = new RequestHandler(
             $client,
             new RateLimitMiddleware(10, 4, new HttpFactory(), $cache, 'cacheKey')
@@ -113,11 +131,10 @@ class RateLimitMiddlewareTest extends TestCase
     private function getCache(): CacheInterface
     {
         $storage = new ArrayObject(['ttl' => []], ArrayObject::ARRAY_AS_PROPS);
-        $cache = $this->getMockBuilder(CacheInterface::class)
-            ->onlyMethods(['get', 'set', 'delete'])
-            ->getMockForAbstractClass();
 
-        $cache->expects($this->any())
+        $cache = $this->createMock(CacheInterface::class);
+
+        $cache->expects($this->atLeast(0))
             ->method('get')
             ->willReturnCallback(function ($key, $default = null) use (&$storage) {
                 if (!isset($storage->ttl[$key]) || $storage->ttl[$key] < new DateTime()) {
@@ -126,14 +143,14 @@ class RateLimitMiddlewareTest extends TestCase
                 return $storage->$key ?? $default;
             });
 
-        $cache->expects($this->any())
+        $cache->expects($this->atLeast(0))
             ->method('set')
             ->willReturnCallback(function ($key, $value, $ttl) use (&$storage) {
                 $storage->ttl[$key] = (new DateTime())->add($ttl);
                 $storage[$key] = $value;
             });
 
-        $cache->expects($this->any())
+        $cache->expects($this->atLeast(0))
             ->method('delete')
             ->willReturnCallback(function ($key) use (&$storage) {
                 if (isset($storage->ttl[$key])) {

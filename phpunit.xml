@@ -2,7 +2,7 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          bootstrap="vendor/autoload.php"
          colors="true"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd">
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd">
     <testsuites>
         <testsuite name="Default">
             <directory>tests/</directory>
@@ -13,4 +13,7 @@
             <directory>src/</directory>
         </include>
     </source>
+    <php>
+        <ini name="display_errors" value="on"/>
+    </php>
 </phpunit>

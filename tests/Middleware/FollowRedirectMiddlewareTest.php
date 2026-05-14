@@ -8,14 +8,13 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 
 class FollowRedirectMiddlewareTest extends TestCase
 {
-    /**
-     * @dataProvider provideFollowRedirect
-     */
+    #[DataProvider('provideFollowRedirect')]
     public function testProcess(string $method, int $statusCode, string $expectedMethod): void
     {
         $client = $this->getMockBuilder(Client::class)
@@ -50,10 +49,8 @@ class FollowRedirectMiddlewareTest extends TestCase
             ['POST', 308, 'POST'],
         ];
     }
-
-    /**
-     * @dataProvider provideNoFollow
-     */
+    
+    #[DataProvider('provideNoFollow')]
     public function testProcessNoFollow(string $method, int $statusCode, array $headers = []): void
     {
         $client = $this->getMockBuilder(Client::class)
